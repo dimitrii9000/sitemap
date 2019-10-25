@@ -1,5 +1,5 @@
 {
-  "site_address": "https://www.metall-tula.ru/",
+  "site_address": "https://mtk-met.ru/",
   "output_file_name": "sitemap.xml",
-  "workers": 8
+  "workers": 4
 }
