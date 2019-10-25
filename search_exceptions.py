@@ -1,0 +1,22 @@
+s_e = [
+    'jpg',
+    'jpeg',
+    'png',
+    'gif',
+    'pg',
+    'zip',
+    'rar',
+    'pdf',
+    'doc',
+    'xls',
+    'docx',
+    'xlsx',
+    'csv',
+    'exe',
+    'pptx',
+    'mp4',
+    'ppt',
+    'wav',
+    'avi',
+    'tif'
+]
