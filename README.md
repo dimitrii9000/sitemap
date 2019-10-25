@@ -8,4 +8,4 @@ In config.json you can specify:
 
   •	  Amount of processes that are going to work on creating of the sitemap
 
-Also, you can specify exceptions that are going to be excluded from your sitemap file in search_exceptions.py
+Also, in search_exceptions.py you can specify exceptions that are going to be excluded from your sitemap file
