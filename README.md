@@ -1,4 +1,4 @@
-Python script that allows you to create sitemap file for site.
+Python script that allows you to create sitemap file for any site.
 
 In config.json you can specify:
 
