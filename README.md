@@ -10,6 +10,6 @@ In config.json you can specify:
   
   •	  Verbose mod (True/False)
   
-  •	  Max depth ("None" for unlimited depth)
+  •	  Max depth (Depth in integer or "None" for unbounded depth)
 
 Also, in files.py you can specify exceptions that are going to be excluded from your sitemap file
