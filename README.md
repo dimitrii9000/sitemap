@@ -12,4 +12,4 @@ In config.json you can specify:
   
   •	  Max depth ("None" for unlimited depth)
 
-Also, in search_exceptions.py you can specify exceptions that are going to be excluded from your sitemap file
+Also, in files.py you can specify exceptions that are going to be excluded from your sitemap file
