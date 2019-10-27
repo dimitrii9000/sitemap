@@ -65,7 +65,7 @@ class SiteMapGenerator:
                         not_visited_urls.append(l)
 
         curr_priority = round(1 / (curr_depth + 1), 1)
-        # Добавляем в карту сайта и непосещённые ссылки
+        # Добавляем в карту сайта непосещённые ссылки
         for n_v_l in not_visited_urls:
             xml += self.wrap_url(n_v_l, curr_priority)
         self.appended_urls = len(self.visited_links) + len(not_visited_urls)
@@ -81,7 +81,7 @@ class SiteMapGenerator:
     def process_each_url(self, url):
         self.verboseprint("Начинаем проверять url: ", url)
         links = []
-        # Если расширение страницы в списке исключаемых файлов, записываем ее, но не используем дальше
+        # Если расширение страницы в списке исключаемых файлов, записываем страницу, но не используем далее
         if url.split('.')[-1] in files.f:
             return [links, url]
         try:
@@ -102,7 +102,7 @@ class SiteMapGenerator:
         return [links, url]
 
     def if_link(self, url):
-        # Юникодим русские и не только символы в ссылке
+        # Юникодим русские и нестандартные символы в ссылке
         url = urllib.parse.unquote(url)
         # Если ссылка не пустая, не GET, не якорь и не в исключениях
         if url != '' and '#' not in url and '?' not in url and 'download' not in url.split('/'):
