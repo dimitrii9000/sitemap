@@ -23,23 +23,34 @@ class SiteMapGenerator:
         self.output_file_name = self.config_file['output_file_name']
         self.workers = self.config_file['workers']
         self.visited_links = []
+        self.appended_urls = 0
         self.session = requests.Session
         self.session.headers = header.header
+        self.verb_mode = False if self.config_file['verbose_mode_on'] == 'False' else True
+        self.verboseprint = print if self.verb_mode else self.empty_func
+        self.max_depth = int(self.config_file['max_depth']) if self.config_file['max_depth'] != 'None' else float("inf")
 
-    def wrap_url(self, url):
-        wrapped_url = XMLS.URL_XML % url
+    def wrap_url(self, url, priority):
+        wrapped_url = XMLS.URL_XML.format(url, priority)
         return wrapped_url
 
+    def empty_func(self, *args):
+        pass
+
     def run(self):
-        # Переменная, куда сохраняются все обернутые url-ы
-        xml = ''
+        curr_depth = 0  # Текущая глубина
+        xml = ''    # Переменная, куда сохраняются все обернутые url-ы
         not_visited_urls = [self.main_address]
         pool = multiprocessing.Pool(self.workers)
 
-        while len(not_visited_urls) != 0:
+        while len(not_visited_urls) != 0 and self.max_depth > curr_depth:
+            curr_depth += 1
+            curr_priority = round(1 / curr_depth, 1)
 
-            print("Количество непосещенных ссылок = ", len(not_visited_urls))
-            print("Количество посещенных ссылок = ", len(self.visited_links))
+            print('----------------------------------------')
+            print("Количество непосещённых ссылок = ", len(not_visited_urls))
+            print("Количество посещённых ссылок = ", len(self.visited_links))
+            print('----------------------------------------')
 
             results = pool.map(self.process_each_url, not_visited_urls)
             for result in results:
@@ -47,11 +58,17 @@ class SiteMapGenerator:
                 url = result[1]
                 not_visited_urls.remove(url)
                 self.visited_links.append(url)
-                xml += self.wrap_url(url)
+                xml += self.wrap_url(url, curr_priority)
 
                 for l in found_links:
                     if l not in self.visited_links and l not in not_visited_urls:
                         not_visited_urls.append(l)
+
+        curr_priority = round(1 / (curr_depth + 1), 1)
+        # Добавляем в карту сайта и непосещённые ссылки
+        for n_v_l in not_visited_urls:
+            xml += self.wrap_url(n_v_l, curr_priority)
+        self.appended_urls = len(self.visited_links) + len(not_visited_urls)
 
         pool.close()
         pool.join()
@@ -62,13 +79,14 @@ class SiteMapGenerator:
             f.write(XMLS.SITEMAP_FOOTER)
 
     def process_each_url(self, url):
+        self.verboseprint("Начинаем проверять url: ", url)
         links = []
         # Если расширение страницы в списке исключаемых файлов, записываем ее, но не используем дальше
         if url.split('.')[-1] in files.f:
             return [links, url]
         try:
-            content = self.session().get(url).text
-        except TimeoutError or requests.exceptions.ConnectionError:
+            content = self.session().get(url, timeout=5).text
+        except requests.exceptions.RequestException:
             content = ''
 
         bsoup = BeautifulSoup(content, features="html.parser")
@@ -80,13 +98,14 @@ class SiteMapGenerator:
 
             if link is not None and link not in links:
                 links.append(link)
+        self.verboseprint("Найдено {} ссылки(-ок) на странице: {}".format(len(links), url))
         return [links, url]
 
     def if_link(self, url):
         # Юникодим русские и не только символы в ссылке
         url = urllib.parse.unquote(url)
         # Если ссылка не пустая, не GET, не якорь и не в исключениях
-        if url != '' and '#' not in url and '?' not in url:
+        if url != '' and '#' not in url and '?' not in url and 'download' not in url.split('/'):
             if len(url) > 300:
                 return None
             # Хэндлим относительные ссылки
@@ -108,7 +127,7 @@ if __name__ == '__main__':
     smg = SiteMapGenerator()
     smg.run()
     print('--------------------------------------------------------------')
-    print("Время выполнения составило: {} c.".format(time.perf_counter()))
-    print("Количество сохраненных ссылок = {}".format(len(smg.visited_links)))
+    print("Время выполнения составило: {} c.".format(round(time.perf_counter(), 1)))
+    print("Количество сохраненных ссылок = {}".format(smg.appended_urls))
     print("Результаты проверки сохранены в: {}".format(smg.output_file_name))
     print('--------------------------------------------------------------')

@@ -1,5 +1,6 @@
 f = [
     'jpg',
+    'JPG',
     'jpeg',
     'png',
     'gif',
@@ -18,5 +19,6 @@ f = [
     'ppt',
     'wav',
     'avi',
-    'tif'
+    'tif',
+    'exe'
 ]

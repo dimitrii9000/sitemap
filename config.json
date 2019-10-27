@@ -1,5 +1,7 @@
 {
-  "site_address": "https://mtk-met.ru/",
+  "site_address": "https://yandex.ru",
   "output_file_name": "sitemap.xml",
-  "workers": 4
+  "workers": 8,
+  "verbose_mode_on": "False",
+  "max_depth": "None"
 }
